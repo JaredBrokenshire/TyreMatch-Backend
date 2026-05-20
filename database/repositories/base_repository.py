@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session
+from database.extensions import db
 from sqlalchemy.exc import IntegrityError
 from typing import TypeVar, Generic, Type, List, Optional
+
 
 T = TypeVar('T')
 
@@ -9,17 +10,17 @@ class BaseRepository(Generic[T]):
     Generic repository providing basic CRUD operations
     """
 
-    def __init__(self, db: Session, model: Type[T]):
-        self.db = db
+    def __init__(self, model: Type[T]):
+        self.db = db.session
         self.model = model
 
     def get_all(self, limit: int = 20, offset: int = 0) -> (List[T], int):
-        query = self.db.query(self.model).order_by(self.model.id).limit(limit).offset(offset)
+        query = self.db.query(self.model)
 
-        items = query.all()
-        total = query.count()
+        total_count = query.count()
+        res = query.order_by(self.model.id).limit(limit).offset(offset).all()
 
-        return items, total
+        return res, total_count
 
     def get_by_id(self, entity_id: int) -> Optional[T]:
         return self.db.query(self.model).filter(self.model.id == entity_id).first()

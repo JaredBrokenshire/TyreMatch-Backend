@@ -3,7 +3,6 @@ from database.extensions import db
 from sqlalchemy.exc import IntegrityError
 from typing import TypeVar, Generic, Type, List, Optional
 
-
 T = TypeVar('T')
 
 class BaseRepository(Generic[T]):

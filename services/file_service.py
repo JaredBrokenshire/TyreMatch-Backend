@@ -1,5 +1,4 @@
 import os
-from policies import uuid_filename
 
 BASE_FILE_DIRECTORY = "/files"
 

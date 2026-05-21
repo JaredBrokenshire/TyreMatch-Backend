@@ -62,7 +62,7 @@ def test_get_all_pagination(client, database_session):
     repo = TyreModelRepository()
 
     repo.create(manufacturer="A", model_name="A")
-    repo.create(manufacturer="B", model_name="B")
+    tyre_model_2 = repo.create(manufacturer="B", model_name="B")
     repo.create(manufacturer="C", model_name="C")
 
     response = client.get("/tyre-models?page_size=1&page=2")
@@ -74,7 +74,7 @@ def test_get_all_pagination(client, database_session):
     assert len(data["data"]) == 1
 
     # Can correctly offset response
-    assert data["data"][0]["manufacturer"] == "B"
+    assert data["data"][0]["manufacturer"] == tyre_model_2.manufacturer
 
 def test_get_all_search(client, database_session):
     repo = TyreModelRepository()

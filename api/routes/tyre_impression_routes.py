@@ -1,9 +1,8 @@
 import http
-import policies
-from services import save_file
 from flask import Blueprint, request, jsonify
 from database.repositories import TyreImpressionRepository
 from api.responses import tyre_impression_response, error_response, paginated_response
+from services.tyre_impression_service import TyreImpressionService
 
 tyre_impression_blueprint = Blueprint('tyre_impression', __name__)
 
@@ -28,27 +27,14 @@ def get_all():
 
 @tyre_impression_blueprint.route('/tyre-impressions/upload', methods=['POST'])
 def upload():
-    repo = TyreImpressionRepository()
+    service = TyreImpressionService()
 
     # Extract file from request
     file = request.files['file']
-
-    valid_file_extensions = ["png", "jpg", "jpeg"]
-
-    # Generate uuid and filename
-    uuid, uuid_file_name = policies.uuid_filename(file)
-    file.filename = uuid_file_name
-    # Save file locally
     try:
-        path = save_file(file, '/files/images/tyre_impressions', valid_file_extensions)
-    except ValueError as e:
-        return error_response(400, "File could not be saved: {}".format(e))
-
-    # Create DB record
-    tyre_impression = repo.create(
-        uuid=uuid,
-        file_path=path,
-    )
+        tyre_impression = service.upload_impression_image(file)
+    except Exception:
+        return error_response(http.HTTPStatus.BAD_REQUEST, f"Error uploading impression image")
 
     res = tyre_impression_response(tyre_impression)
     return jsonify(res), http.HTTPStatus.CREATED

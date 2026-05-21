@@ -11,6 +11,7 @@
 - Added get_all endpoint for tyre impressions
 - Added image upload endpoint for tyre impressions
 - Added custom exceptions
+- Added `TyreImpressionService` to handle upload image logic
 
 ### [Changed]
 - Changed styling on subheadings in changelog

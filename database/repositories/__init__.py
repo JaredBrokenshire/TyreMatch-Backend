@@ -1,1 +1,2 @@
 from .tyre_model_repository import TyreModelRepository
+from .tyre_impression_repository import TyreImpressionRepository

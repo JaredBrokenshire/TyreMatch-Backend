@@ -6,6 +6,7 @@
 
 ### Added
 - Added model_name or manufacturer search parameter to tyre_model list route
+- Added appropriate CORS origins to allow requests from frontend
 
 ### Changed
 - Changed pagination parameters to be page and page_size and used built-in paginate method

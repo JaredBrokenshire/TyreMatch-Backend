@@ -8,6 +8,7 @@
 - Created a tyre impression model with a status enum data type
 - Created database migration for new `tyre_impressions` table
 - Added a file service with file naming policies
+- Added get_all endpoint for tyre impressions
 - Added image upload endpoint for tyre impressions
 
 ### [Changed]

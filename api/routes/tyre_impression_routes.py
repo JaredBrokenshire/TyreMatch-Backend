@@ -1,12 +1,30 @@
 import http
-
 import policies
 from services import save_file
 from flask import Blueprint, request, jsonify
 from database.repositories import TyreImpressionRepository
-from api.responses import tyre_impression_response, error_response
+from api.responses import tyre_impression_response, error_response, paginated_response
 
 tyre_impression_blueprint = Blueprint('tyre_impression', __name__)
+
+@tyre_impression_blueprint.route('/tyre-impressions', methods=['GET'])
+def get_all():
+    repo = TyreImpressionRepository()
+
+    # Query Parameters
+    page_size = request.args.get("page_size", default=20, type=int)
+    page = request.args.get("page", default=1, type=int)
+
+    tyre_impressions, total_count = repo.get_all(
+        page_size=page_size,
+        page=page,
+    )
+
+    res = paginated_response(
+        [tyre_impression_response(t) for t in tyre_impressions],
+        total_count
+    )
+    return jsonify(res)
 
 @tyre_impression_blueprint.route('/tyre-impression/upload', methods=['POST'])
 def upload():

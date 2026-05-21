@@ -1,8 +1,8 @@
-## v0.0.4 `DATE`
+## v0.0.4 21/05/2026
 ### Test Coverage
-- Statements: 
-- Missed: 
-- Coverage: 
+- Statements: 109
+- Missed: 0
+- Coverage: 100% 
 
 ### Added
 - Added model_name or manufacturer search parameter to tyre_model list route

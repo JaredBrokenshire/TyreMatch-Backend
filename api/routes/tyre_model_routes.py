@@ -10,10 +10,15 @@ def get_all():
     repo = TyreModelRepository()
 
     # Query Parameters
-    limit = request.args.get("limit", default=20, type=int)
-    offset = request.args.get("offset", default=0, type=int)
+    page_size = request.args.get("page_size", default=20, type=int)
+    page = request.args.get("page", default=1, type=int)
+    search = request.args.get("search", default="", type=str)
 
-    tyre_models, total_count = repo.get_all(limit, offset)
+    tyre_models, total_count = repo.get_all(
+        page_size=page_size,
+        page=page,
+        search=search
+    )
 
     res = paginated_response(
         [slim_tyre_model_response(t) for t in tyre_models],

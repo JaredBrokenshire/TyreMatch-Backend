@@ -4,7 +4,11 @@
 - Missed: 
 - Coverage: 
 
+### Added
+- Added model_name or manufacturer search parameter to tyre_model list route
 
+### Changed
+- Changed pagination parameters to be page and page_size and used built-in paginate method
 
 ## v0.0.3 20/05/2026
 ### Test Coverage

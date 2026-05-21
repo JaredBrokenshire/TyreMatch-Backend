@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from database.extensions import db
 from sqlalchemy.exc import IntegrityError
 from typing import TypeVar, Generic, Type, List, Optional
@@ -14,11 +15,24 @@ class BaseRepository(Generic[T]):
         self.db = db.session
         self.model = model
 
-    def get_all(self, limit: int = 20, offset: int = 0) -> (List[T], int):
+    def get_all(self, page_size: int = 20, page: int = 1, search: str = "") -> (List[T], int):
         query = self.db.query(self.model)
 
-        total_count = query.count()
-        res = query.order_by(self.model.id).limit(limit).offset(offset).all()
+        if search != "":
+            search_term = f"%{search}%"
+            query = query.filter(
+                or_(
+                    self.model.manufacturer.ilike(search_term),
+                    self.model.model_name.ilike(search_term),
+                )
+            )
+
+        query = query.order_by(self.model.id)
+
+        query = query.paginate(page=page, per_page=page_size, error_out=False, count=True)
+
+        total_count = query.total
+        res = query.items
 
         return res, total_count
 

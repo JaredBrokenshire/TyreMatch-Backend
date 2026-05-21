@@ -65,17 +65,54 @@ def test_get_all_pagination(client, database_session):
     repo.create(manufacturer="B", model_name="B")
     repo.create(manufacturer="C", model_name="C")
 
-    response = client.get("/tyre-models?limit=2&offset=1")
+    response = client.get("/tyre-models?page_size=1&page=2")
 
     data = response.get_json()
 
     # Can return correct number of items
     assert data["total_count"] == 3
-    assert len(data["data"]) == 2
+    assert len(data["data"]) == 1
 
     # Can correctly offset response
     assert data["data"][0]["manufacturer"] == "B"
-    assert data["data"][1]["manufacturer"] == "C"
+
+def test_get_all_search(client, database_session):
+    repo = TyreModelRepository()
+
+    tyre_model_1 = repo.create(manufacturer='Michelin', model_name='Pilot Sport')
+    tyre_model_2 = repo.create(manufacturer='Pirelli', model_name='P Zero')
+    tyre_model_3 = repo.create(manufacturer='Goodyear', model_name='Eagle F1')
+
+    response = client.get(f"/tyre-models?search={tyre_model_1.manufacturer[:3]}")
+
+    # Can search by manufacturer
+    assert response.status_code == http.HTTPStatus.OK
+
+    data = response.get_json()
+
+    # Can get correct tyre model from search
+    assert data["total_count"] == 1
+    assert len(data["data"]) == 1
+    assert data["data"][0]["id"] == tyre_model_1.id
+    assert data["data"][0]["manufacturer"] == tyre_model_1.manufacturer
+    assert tyre_model_2.manufacturer not in data["data"]
+    assert tyre_model_3.manufacturer not in data["data"]
+
+    response = client.get(f"/tyre-models?search={tyre_model_2.model_name[:3]}")
+
+    # Can search by model name
+    assert response.status_code == http.HTTPStatus.OK
+
+    data = response.get_json()
+
+    # Can get correct tyre model from search
+    assert data["total_count"] == 1
+    assert len(data["data"]) == 1
+    assert data["data"][0]["id"] == tyre_model_2.id
+    assert data["data"][0]["model_name"] == tyre_model_2.model_name
+    assert tyre_model_1.model_name not in data["data"]
+    assert tyre_model_3.model_name not in data["data"]
+
 
 def test_get_by_id_not_exist(client):
     response = client.get("/tyre-models/test")

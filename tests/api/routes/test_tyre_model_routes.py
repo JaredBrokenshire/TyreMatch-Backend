@@ -1,12 +1,21 @@
 import http
+from unittest.mock import patch
+
+import pytest
+
+from database.models import TyreModel
 from database.repositories import TyreModelRepository
+from domain import DatabaseError
+from services import TyreModelService
+from tests.mocks.services import MockTyreModelService
 
 
 def test_get_all(client, database_session):
     repo = TyreModelRepository()
 
     tyre_model_1 = repo.create(manufacturer='Michelin', model_name='Pilot Sport', category="Sport", vehicle_type="SUV")
-    tyre_model_2 = repo.create(manufacturer='Pirelli', model_name='P Zero', category="Winter", vehicle_type="Passenger Car")
+    tyre_model_2 = repo.create(manufacturer='Pirelli', model_name='P Zero', category="Winter",
+                               vehicle_type="Passenger Car")
 
     response = client.get("/tyre-models")
 
@@ -46,6 +55,7 @@ def test_get_all(client, database_session):
     assert "groove_count" not in first
     assert "width_mm" not in first
 
+
 def test_get_all_empty(client):
     response = client.get("/tyre-models")
 
@@ -57,6 +67,7 @@ def test_get_all_empty(client):
     # Can return empty dataset
     assert data["total_count"] == 0
     assert data["data"] == []
+
 
 def test_get_all_pagination(client, database_session):
     repo = TyreModelRepository()
@@ -75,6 +86,7 @@ def test_get_all_pagination(client, database_session):
 
     # Can correctly offset response
     assert data["data"][0]["manufacturer"] == tyre_model_2.manufacturer
+
 
 def test_get_all_search(client, database_session):
     repo = TyreModelRepository()
@@ -129,6 +141,7 @@ def test_get_by_id_not_exist(client):
     assert "error" in data
     assert data["error"] == "TyreModel with id 1 not found"
 
+
 def test_get_by_id(client, database_session):
     repo = TyreModelRepository()
 
@@ -182,3 +195,43 @@ def test_get_by_id(client, database_session):
     assert data["notes"] == tyre_model.notes
 
 
+def test_create(client):
+    # Can not create if there is an error from the tyre model service
+    with patch.object(TyreModelService, "create", side_effect=DatabaseError("test error")):
+        response = client.post(
+            "/tyre-models",
+            json={
+                "manufacturer": "Michelin",
+                "model_name": "Pilot Sport",
+            }
+        )
+        # Ensure correct status code and error message are returned
+        assert response.status_code == http.HTTPStatus.INTERNAL_SERVER_ERROR
+        assert "Error creating tyre model record" == response.json["error"]
+
+    # Setup mock tyre model service
+    mock_tyre_model_service = MockTyreModelService()
+    mock_tyre_model_service.create_response = TyreModel(manufacturer="Michelin", model_name="Pilot Sport")
+
+    with patch.object(TyreModelService, "create", side_effect=mock_tyre_model_service.create):
+        response = client.post(
+            "/tyre-models",
+            json={
+                "manufacturer": "Michelin",
+                "model_name": "Pilot Sport",
+            }
+        )
+        # Ensure correct status code is returned
+        assert response.status_code == http.HTTPStatus.CREATED
+        # Ensure tyre model service was called correctly
+        assert 1 == len(mock_tyre_model_service.create_calls)
+        assert "Michelin" == mock_tyre_model_service.create_calls[0].get("manufacturer")
+        assert "Pilot Sport" == mock_tyre_model_service.create_calls[0].get("model_name")
+
+        # Ensure correct tyre model response is returned
+        data = response.get_json()
+        assert "id" in data
+        assert "manufacturer" in data
+        assert "model_name" in data
+        assert "Michelin" == data["manufacturer"]
+        assert "Pilot Sport" == data["model_name"]

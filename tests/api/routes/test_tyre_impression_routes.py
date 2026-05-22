@@ -1,12 +1,11 @@
 import http
 import uuid
 from unittest.mock import patch
-
-from database.models.data_types import TyreImpressionStatus
 from tests.mocks.data import MockFile
 from services import TyreImpressionService
 from database.models import TyreImpression
 from database.repositories import TyreImpressionRepository
+from database.models.data_types import TyreImpressionStatus
 from tests.mocks.services.mock_tyre_impression_service import MockTyreImpressionService
 
 
@@ -48,6 +47,7 @@ def test_get_all(client, database_session):
     assert second["status"] == tyre_impression_2.status.value
     assert second["created_at"] == tyre_impression_2.created_at.isoformat()
 
+
 def test_get_all_empty(client):
     response = client.get("/tyre-impressions")
 
@@ -59,6 +59,7 @@ def test_get_all_empty(client):
     # Can return empty dataset
     assert data["total_count"] == 0
     assert data["data"] == []
+
 
 def test_get_all_pagination(client, database_session):
     repo = TyreImpressionRepository()
@@ -77,6 +78,7 @@ def test_get_all_pagination(client, database_session):
 
     # Can correctly offset response
     assert str(data["data"][0]["uuid"]) == str(tyre_impression_2.uuid)
+
 
 def test_upload(client, database_session, monkeypatch):
     # Can not upload if there is an error from the tyre impression service
@@ -98,9 +100,12 @@ def test_upload(client, database_session, monkeypatch):
     mock_tyre_impression_service = MockTyreImpressionService()
 
     # Can upload tyre impression image
-    mock_tyre_impression_service.upload_impression_image_response = TyreImpression(uuid="test-uuid", file_path="/test/file/path", status=TyreImpressionStatus.uploaded)
+    mock_tyre_impression_service.upload_impression_image_response = TyreImpression(uuid="test-uuid",
+                                                                                   file_path="/test/file/path",
+                                                                                   status=TyreImpressionStatus.uploaded)
 
-    with patch.object(TyreImpressionService, "upload_impression_image", mock_tyre_impression_service.upload_impression_image):
+    with patch.object(TyreImpressionService, "upload_impression_image",
+                      mock_tyre_impression_service.upload_impression_image):
         file = MockFile(filename="test.jpg")
         response = client.post(
             "/tyre-impressions/upload",
@@ -119,4 +124,3 @@ def test_upload(client, database_session, monkeypatch):
         assert "test-uuid" == data["uuid"]
         assert "/test/file/path" == data["file_path"]
         assert TyreImpressionStatus.uploaded.value == data["status"]
-

@@ -1,6 +1,6 @@
 import pytest
+from domain import DatabaseError
 from database.models import TyreModel
-from sqlalchemy.exc import IntegrityError
 from database.repositories.base_repository import BaseRepository
 
 
@@ -8,7 +8,7 @@ def test_create(app_ctx, database_session):
     repo = BaseRepository(TyreModel)
 
     # Can not create entity with required fields missing
-    with pytest.raises(IntegrityError):
+    with pytest.raises(DatabaseError, match="Error inserting record into DB"):
         repo.create()
 
     # Can create entity
@@ -18,6 +18,7 @@ def test_create(app_ctx, database_session):
     assert tyre_model.manufacturer == 'Michelin'
     assert tyre_model.model_name is not None
     assert tyre_model.model_name == 'Test Tyre Model'
+
 
 def test_get_all(app_ctx, database_session):
     repo = BaseRepository(TyreModel)
@@ -59,6 +60,7 @@ def test_get_all(app_ctx, database_session):
     assert len(empty_results) == 0
     assert total_count == 4
 
+
 def test_get_by_id(app_ctx, database_session):
     repo = BaseRepository(TyreModel)
 
@@ -70,7 +72,6 @@ def test_get_by_id(app_ctx, database_session):
     assert found.id == created.id
     assert found.manufacturer == 'Michelin'
     assert found.model_name == 'Test Tyre Model'
-
 
     # Can not get by invalid ID
     invalid_id = 999999

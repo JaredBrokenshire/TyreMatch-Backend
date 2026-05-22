@@ -1,8 +1,15 @@
-## v0.0.5 `DATE`
+## v0.0.6 `DATE`
 ### [Test Coverage]
 - Statements: 
 - Missed: 
-- Coverage: % 
+- Coverage: %
+
+
+## v0.0.5 22/05/2026
+### [Test Coverage]
+- Statements: 288
+- Missed: 0
+- Coverage: 100% 
 
 ### [Added]
 - Created a tyre impression model with a status enum data type
@@ -14,6 +21,7 @@
 - Added `TyreImpressionService` to handle upload image logic
 - Added `TyreModelService` to handle tyre model endpoint logic
 - Added create endpoint for tyre models
+- Added tyre model service for create logic
 
 ### [Changed]
 - Changed styling on subheadings in changelog

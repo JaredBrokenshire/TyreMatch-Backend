@@ -8,23 +8,23 @@ class TyreModelService:
     def __init__(self):
         self.repo = TyreModelRepository()
 
-    def create(self, model):
+    def create(self, dto):
         try:
             tyre_model = self.repo.create(
-                manufacturer=model["manufacturer"],
-                model_name=model["model_name"],
-                category=model["category"],
-                vehicle_type=model["vehicle_type"],
-                width_mm=model["width_mm"],
-                aspect_ratio=model["aspect_ratio"],
-                rim_diameter_inches=model["rim_diameter_inches"],
-                groove_count=model["groove_count"],
-                pattern_type=model["pattern_type"],
-                tread_pitch_length_mm=model["tread_pitch_length_mm"],
-                dataset_source=model["dataset_source"],
-                notes=model["notes"],
+                manufacturer=dto.get("manufacturer", "Temp Manufacturer"),
+                model_name=dto.get("model_name", "Temp Model None"),
+                category=dto.get("category", None),
+                vehicle_type=dto.get("vehicle_type", None),
+                width_mm=dto.get("width_mm", None),
+                aspect_ratio=dto.get("aspect_ratio", None),
+                rim_diameter_inches=dto.get("rim_diameter_inches", None),
+                groove_count=dto.get("groove_count", None),
+                pattern_type=dto.get("pattern_type", None),
+                tread_pitch_length_mm=dto.get("tread_pitch_length_mm", None),
+                dataset_source=dto.get("dataset_source", None),
+                notes=dto.get("notes", None),
             )
-        except IntegrityError as e:
+        except Exception as e:
             current_app.logger.error(f"Error creating tyre_model record: {e}")
             raise DatabaseError(f"Error creating tyre_model record: {e}")
 

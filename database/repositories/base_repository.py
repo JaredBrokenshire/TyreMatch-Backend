@@ -1,10 +1,11 @@
 from sqlalchemy import or_
 from domain import DatabaseError
 from database.extensions import db
+from sqlalchemy.exc import IntegrityError
 from typing import TypeVar, Generic, Type, List, Optional
 
-
 T = TypeVar('T')
+
 
 class BaseRepository(Generic[T]):
     """
@@ -41,13 +42,13 @@ class BaseRepository(Generic[T]):
 
     def create(self, **kwargs) -> T:
         entity = self.model(**kwargs)
-        self.db.add(entity)
 
         try:
+            self.db.add(entity)
             self.db.flush()
-        except DatabaseError as e:
+        except IntegrityError as e:
             self.db.rollback()
-            raise e
+            raise DatabaseError("Error inserting record into DB")
 
         return entity
 

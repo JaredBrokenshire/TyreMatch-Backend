@@ -8,7 +8,7 @@
 
 ## v0.1.0 23/05/2026
 ### [Test Coverage]
-- Statements: 314
+- Statements: 313
 - Missed: 0
 - Coverage: 100%
 
@@ -19,6 +19,8 @@
 - Updated tyre impression upload route and tyre impression service to give more detailed logs and error outputs
 - Changed the working directory in docker-compose
 - Moved file service to a class object
+- Updated `dataset_source` and `notes` columns in `tyre_models` to be longtext
+- Updated lengths of varchar fields in `tyre_models` table
 
 ### [Removed]
 - Removed debug logs from tyre model service

@@ -96,13 +96,14 @@ class TyreModelService:
         return updated_tyre_model
 
     def delete(self, id_: int) -> bool:
-        try:
-            res = self.repo.delete(id_)
-        except ModelNotFoundError as e:
-            current_app.logger.error(f"Tyre model with id {id_} not found: {e}")
-            raise ModelNotFoundError(f"Tyre model with id {id_} not found")
-        except DatabaseError as e:
-            current_app.logger.error(f"Error deleting tyre model record: {e}")
-            raise DatabaseError(f"Error deleting tyre model record: {e}")
+        with UnitOfWork(db.session):
+            try:
+                res = self.repo.delete(id_)
+            except ModelNotFoundError as e:
+                current_app.logger.error(f"Tyre model with id {id_} not found: {e}")
+                raise ModelNotFoundError(f"Tyre model with id {id_} not found")
+            except DatabaseError as e:
+                current_app.logger.error(f"Error deleting tyre model record: {e}")
+                raise DatabaseError(f"Error deleting tyre model record: {e}")
 
-        return res
+            return res

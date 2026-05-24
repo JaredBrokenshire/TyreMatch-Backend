@@ -7,6 +7,9 @@
 ### [Changed]
 - Updated project structure in readme
 
+### [Fixed]
+- Fixed tyre model service delete method to correctly use unit of work
+
 
 ## v0.1.0 24/05/2026
 ### [Test Coverage]

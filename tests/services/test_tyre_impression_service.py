@@ -133,5 +133,5 @@ def test_upload_impression_image():
         # Ensure file service was called correctly
         assert 1 == len(mock_file_service.save_file_calls)
         assert "test-file.jpg" in mock_file_service.save_file_calls[0][0]
-        assert "/tyre_match/files/tyre_impressions" == mock_file_service.save_file_calls[0][1]
+        assert "/tyre_match/files/tyre_impressions/raw" == mock_file_service.save_file_calls[0][1]
 

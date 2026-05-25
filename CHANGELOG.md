@@ -5,7 +5,8 @@
 - Coverage: %
 
 ### [Added]
-- Created tyre impression image processing table
+- Created tyre impression processing table
+- Created tyre impression processing service and repository
 
 ### [Changed]
 - Updated project structure in readme

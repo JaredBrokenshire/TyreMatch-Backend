@@ -29,7 +29,7 @@ class TyreImpressionService:
         try:
             path = self.file_service.save_file(
                 file,
-                "/tyre_match/files/tyre_impressions",
+                "/tyre_match/files/tyre_impressions/raw",
                 ["png", "jpg", "jpeg", "webp"]
             )
         except InvalidFileTypeError as e:

@@ -3,3 +3,4 @@ class TyreImpressionProcessingPipeline:
         pass
 
     def process(self, file_path):
+        pass

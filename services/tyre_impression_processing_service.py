@@ -19,8 +19,8 @@ class TyreImpressionProcessingService():
         tyre_impression_processing = self.tyre_impression_processing_repository.get_by_tyre_impression_id(tyre_impression_id)
 
         if not tyre_impression_processing:
-            current_app.logger.error(f"Error getting tyre impression processing by tyre impression id {tyre_impression_id}: {e}")
-            raise ModelNotFoundError(f"Error getting tyre impression processing by tyre impression id {tyre_impression_id}: {e}")
+            current_app.logger.error(f"Error getting tyre impression processing by tyre impression id {tyre_impression_id}")
+            raise ModelNotFoundError(f"Error getting tyre impression processing by tyre impression id {tyre_impression_id}")
 
         return tyre_impression_processing
 
@@ -36,10 +36,10 @@ class TyreImpressionProcessingService():
 
             # Set status -> preprocessing
             try:
-                tyre_impression = self._set_tyre_impression_status(tyre_impression, TyreImpressionStatus.preprocessing)
+                tyre_impression = self._set_tyre_impression_status(tyre_impression, TyreImpressionStatus.processing)
             except DatabaseError as e:
-                current_app.logger.error(f"Error setting tyre impression status `{TyreImpressionStatus.preprocessing}` in processing service: {e}")
-                raise DatabaseError(f"Error setting tyre impression status `{TyreImpressionStatus.preprocessing}` in processing service: {e}")
+                current_app.logger.error(f"Error setting tyre impression status `{TyreImpressionStatus.processing}` in processing service: {e}")
+                raise DatabaseError(f"Error setting tyre impression status `{TyreImpressionStatus.processing}` in processing service: {e}")
 
             # Run pipeline
             try:
@@ -49,14 +49,18 @@ class TyreImpressionProcessingService():
                 raise e
 
             # Save outputs
-            tyre_impression_processing = self._upsert_processing_record(tyre_impression, results)
+            try:
+                tyre_impression_processing = self._upsert_processing_record(tyre_impression, results)
+            except DatabaseError as e:
+                current_app.logger.error(f"Error upserting tyre impression processing record in processing service: {e}")
+                raise DatabaseError(f"Error upserting tyre impression processing record in processing service: {e}")
 
             # Set status processed
             try:
-                self._set_tyre_impression_status(tyre_impression, TyreImpressionStatus.preprocessed)
+                self._set_tyre_impression_status(tyre_impression, TyreImpressionStatus.processed)
             except DatabaseError as e:
-                current_app.logger.error(f"Error setting tyre impression status `{TyreImpressionStatus.preprocessed}` in processing service: {e}")
-                raise DatabaseError(f"Error setting tyre impression status `{TyreImpressionStatus.preprocessed}` in processing service: {e}")
+                current_app.logger.error(f"Error setting tyre impression status `{TyreImpressionStatus.processed}` in processing service: {e}")
+                raise DatabaseError(f"Error setting tyre impression status `{TyreImpressionStatus.processed}` in processing service: {e}")
 
             return tyre_impression_processing
 
@@ -65,8 +69,8 @@ class TyreImpressionProcessingService():
         tyre_impression = self.tyre_impression_repository.get_by_id(tyre_impression_id)
 
         if not tyre_impression:
-            current_app.logger.error(f"Error getting tyre impression with id {tyre_impression_id}: {e}")
-            raise ModelNotFoundError(f"Error getting tyre impression with id {tyre_impression_id}: {e}")
+            current_app.logger.error(f"Error getting tyre impression with id {tyre_impression_id}")
+            raise ModelNotFoundError(f"Error getting tyre impression with id {tyre_impression_id}")
 
         return tyre_impression
 
@@ -82,29 +86,29 @@ class TyreImpressionProcessingService():
 
 
     def _upsert_processing_record(self, tyre_impression: TyreImpression, results: dict) -> TyreImpressionProcessing:
-        processing = self.get_by_tyre_impression_id(tyre_impression.id)
-        if not processing:
-            processing = TyreImpressionProcessing(
+        try:
+            processing = self.get_by_tyre_impression_id(tyre_impression.id)
+        except ModelNotFoundError:
+            processing = self.tyre_impression_processing_repository.create(
                 tyre_impression_id=tyre_impression.id,
             )
-            self.tyre_impression_processing_repository.create(
-                tyre_impression=processing.tyre_impression_id,
-            )
-
-        processing.grayscale_path = results.get("grayscale_path")
-        processing.binary_path = results.get("binary_path")
-        processing.skeleton_path = results.get("skeleton_path")
 
         features = results.get("features", {})
 
-        processing.edge_density = features.get("edge_density")
-        processing.void_ratio = features.get("void_ratio")
-        processing.groove_count = features.get("groove_count")
-
-        processing.preprocessing_version = results.get(
-            "preprocessing_version",
-            1
-        )
+        try:
+            processing = self.tyre_impression_processing_repository.update(
+                processing,
+                grayscale_path=results.get("grayscale_path"),
+                binary_path=results.get("binary_path"),
+                skeleton_path=results.get("skeleton_path"),
+                edge_density=features.get("edge_density"),
+                void_ratio=features.get("void_ratio"),
+                groove_count=features.get("groove_count"),
+                preprocessing_version=results.get("preprocessing_version", 1),
+            )
+        except DatabaseError as e:
+            current_app.logger.error(f"Error upserting tyre impression processing: {e}")
+            raise DatabaseError(f"Error upserting tyre impression processing: {e}")
 
         return processing
 

@@ -1,7 +1,7 @@
 """Created tyre impression processing table
 
 Revision ID: 3a3a40211772
-Revises: f45d3b90fa8e
+Revises: e8059bdc7f45
 Create Date: 2026-05-25 10:51:55.684692
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '3a3a40211772'
-down_revision = 'f45d3b90fa8e'
+down_revision = 'e8059bdc7f45'
 branch_labels = None
 depends_on = None
 

@@ -98,13 +98,20 @@ class TyreImpressionProcessingService():
         try:
             processing = self.tyre_impression_processing_repository.update(
                 processing,
-                grayscale_path=results.get("grayscale_path"),
+                normalised_path=results.get("normalised_path"),
+                enhanced_path=results.get("enhanced_path"),
                 binary_path=results.get("binary_path"),
+                clean_path=results.get("clean_path"),
                 skeleton_path=results.get("skeleton_path"),
+
                 edge_density=features.get("edge_density"),
                 void_ratio=features.get("void_ratio"),
                 groove_count=features.get("groove_count"),
-                preprocessing_version=results.get("preprocessing_version", 1),
+
+                feature_vector_json=features.get("feature_vector_json"),
+                match_result_json=features.get("match_result_json"),
+
+                pipeline_version=results.get("pipeline_version", 1),
             )
         except DatabaseError as e:
             current_app.logger.error(f"Error upserting tyre impression processing: {e}")

@@ -1,10 +1,7 @@
 from datetime import datetime
-
-import sqlalchemy
-
 from database.session import Base
-from sqlalchemy.orm import Relationship, relationship
-
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import Column, Integer, ForeignKey, String, Float, DateTime
 
 
@@ -19,15 +16,20 @@ class TyreImpressionProcessing(Base):
         unique=True
     )
 
-    grayscale_path = Column(String(255), nullable=True)
+    normalised_path = Column(String(255), nullable=True)
+    enhanced_path = Column(String(255), nullable=True)
     binary_path = Column(String(255), nullable=True)
+    clean_path = Column(String(255), nullable=True)
     skeleton_path = Column(String(255), nullable=True)
 
     edge_density = Column(Float, nullable=True)
     void_ratio = Column(Float, nullable=True)
     groove_count = Column(Integer, nullable=True)
 
-    preprocessing_version = Column(Integer, default=1, nullable=False)
+    feature_vector_json = Column(LONGTEXT, nullable=True)
+    match_results_json = Column(LONGTEXT, nullable=True)
+
+    pipeline_version = Column(Integer, default=1, nullable=False)
 
     created_at = Column(DateTime, nullable=True, default=datetime.now)
 
@@ -39,4 +41,4 @@ class TyreImpressionProcessing(Base):
     )
 
     def __repr__(self):
-        return f"<TyreImpressionProcessing {self.id} v{self.preprocessing_version}>"
+        return f"<TyreImpressionProcessing {self.id} v{self.pipeline_version}>"

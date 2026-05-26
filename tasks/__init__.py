@@ -1,0 +1,1 @@
+from .tyre_impression_tasks import process_tyre_impression_task

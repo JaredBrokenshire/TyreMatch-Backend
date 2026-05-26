@@ -14,14 +14,21 @@ class TyreImpressionProcessingFactory:
 
         defaults = {
             "tyre_impression_id": tyre_impression_id,
-            "grayscale_path": f"/files/tyre_impressions/grayscale/{cls.counter}",
-            "binary_path": f"/files/tyre_impressions/binary/{cls.counter}",
-            "skeleton_path": f"/files/tyre_impressions/skeleton/{cls.counter}",
+
+            "normalised_path": f"/files/tyre_impressions/{tyre_impression_id}/normalised/test.jpg",
+            "enhanced_path": f"/files/tyre_impressions/{tyre_impression_id}/enhanced/test.jpg",
+            "binary_path": f"/files/tyre_impressions/{tyre_impression_id}/binary/test.jpg",
+            "clean_path": f"/files/tyre_impressions/{tyre_impression_id}/clean/test.jpg",
+            "skeleton_path": f"/files/tyre_impressions/{tyre_impression_id}/skeleton/test.jpg",
+
             "edge_density": random(),
             "void_ratio": random(),
-            "groove_count": randint(1,8),
-            "preprocessing_version": randint(1,10),
-            "created_at": datetime.now()
+            "groove_count": randint(1,10),
+
+            "feature_vector_json": "{random: json}",
+            "match_results_json": "{different_random: json}",
+
+            "pipeline_version": 1,
         }
 
         defaults.update(kwargs)

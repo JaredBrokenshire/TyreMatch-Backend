@@ -83,15 +83,17 @@ def test_process_tyre_impression_database_error_from_upsert_processing_record():
     tyre_impression = TyreImpressionFactory().create()
 
     mock_results = {
-        "grayscale_path": "/files/tyre_impressions/grayscale/test.jpg",
-        "binary_path": "/files/tyre_impressions/binary/test.jpg",
-        "skeleton_path": "/files/tyre_impressions/skeleton/test.jpg",
+        "normalised_path": f"/files/tyre_impressions/{tyre_impression.id}/normalised/test.jpg",
+        "enhanced_path": f"/files/tyre_impressions/{tyre_impression.id}/enhanced/test.jpg",
+        "binary_path": f"/files/tyre_impressions/{tyre_impression.id}/binary/test.jpg",
+        "clean_path": f"/files/tyre_impressions/{tyre_impression.id}/clean/test.jpg",
+        "skeleton_path": f"/files/tyre_impressions/{tyre_impression.id}/skeleton/test.jpg",
         "features": {
             "edge_density": random(),
             "void_ratio": random(),
             "groove_count": randint(1,10),
         },
-        "preprocessing_version": 2,
+        "pipeline_version": 1,
     }
 
     with patch.object(
@@ -119,15 +121,17 @@ def test_process_tyre_impression_database_error_from_set_tyre_impression_status_
     )
 
     mock_results = {
-        "grayscale_path": "/files/tyre_impressions/grayscale/test.jpg",
-        "binary_path": "/files/tyre_impressions/binary/test.jpg",
-        "skeleton_path": "/files/tyre_impressions/skeleton/test.jpg",
+        "normalised_path": f"/files/tyre_impressions/{tyre_impression.id}/normalised/test.jpg",
+        "enhanced_path": f"/files/tyre_impressions/{tyre_impression.id}/enhanced/test.jpg",
+        "binary_path": f"/files/tyre_impressions/{tyre_impression.id}/binary/test.jpg",
+        "clean_path": f"/files/tyre_impressions/{tyre_impression.id}/clean/test.jpg",
+        "skeleton_path": f"/files/tyre_impressions/{tyre_impression.id}/skeleton/test.jpg",
         "features": {
             "edge_density": random(),
             "void_ratio": random(),
             "groove_count": randint(1,10),
         },
-        "preprocessing_version": 2,
+        "pipeline_version": 1,
     }
 
     with patch.object(
@@ -156,15 +160,17 @@ def test_process_tyre_impression():
     tyre_impression = TyreImpressionFactory().create()
 
     mock_results = {
-        "grayscale_path": "/files/tyre_impressions/grayscale/test.jpg",
-        "binary_path": "/files/tyre_impressions/binary/test.jpg",
-        "skeleton_path": "/files/tyre_impressions/skeleton/test.jpg",
+        "normalised_path": f"/files/tyre_impressions/{tyre_impression.id}/normalised/test.jpg",
+        "enhanced_path": f"/files/tyre_impressions/{tyre_impression.id}/enhanced/test.jpg",
+        "binary_path": f"/files/tyre_impressions/{tyre_impression.id}/binary/test.jpg",
+        "clean_path": f"/files/tyre_impressions/{tyre_impression.id}/clean/test.jpg",
+        "skeleton_path": f"/files/tyre_impressions/{tyre_impression.id}/skeleton/test.jpg",
         "features": {
             "edge_density": random(),
             "void_ratio": random(),
             "groove_count": randint(1,10),
         },
-        "preprocessing_version": 2,
+        "pipeline_version": 1,
     }
 
     with patch.object(TyreImpressionProcessingPipeline, "process", return_value=mock_results):
@@ -172,13 +178,15 @@ def test_process_tyre_impression():
 
         assert result.id is not None
         assert result.tyre_impression_id == tyre_impression.id
-        assert result.grayscale_path == mock_results.get("grayscale_path")
+        assert result.normalised_path == mock_results.get("normalised_path")
+        assert result.enhanced_path == mock_results.get("enhanced_path")
         assert result.binary_path == mock_results.get("binary_path")
+        assert result.clean_path == mock_results.get("clean_path")
         assert result.skeleton_path == mock_results.get("skeleton_path")
         assert result.edge_density == mock_results.get("features").get("edge_density")
         assert result.void_ratio == mock_results.get("features").get("void_ratio")
         assert result.groove_count == mock_results.get("features").get("groove_count")
-        assert result.preprocessing_version == mock_results.get("preprocessing_version")
+        assert result.pipeline_version == mock_results.get("pipeline_version")
 
 
 def test_get_tyre_impression_invalid_id():
@@ -235,14 +243,17 @@ def test_upsert_processing_record_not_exist():
     tyre_impression = TyreImpressionFactory().create()
 
     result = service._upsert_processing_record(tyre_impression, {
-        "grayscale_path": "/files/tyre_impressions/grayscale/test.jpg",
-        "binary_path": "/files/tyre_impressions/binary/test.jpg",
-        "skeleton_path": "/files/tyre_impressions/skeleton/test.jpg",
+        "normalised_path": f"/files/tyre_impressions/{tyre_impression.id}/normalised/test.jpg",
+        "enhanced_path": f"/files/tyre_impressions/{tyre_impression.id}/enhanced/test.jpg",
+        "binary_path": f"/files/tyre_impressions/{tyre_impression.id}/binary/test.jpg",
+        "clean_path": f"/files/tyre_impressions/{tyre_impression.id}/clean/test.jpg",
+        "skeleton_path": f"/files/tyre_impressions/{tyre_impression.id}/skeleton/test.jpg",
         "features": {
             "edge_density": random(),
             "void_ratio": random(),
             "groove_count": randint(1,10),
-        }
+        },
+        "pipeline_version": 1,
     })
 
     # Ensure only one tyre impression processing record was created
@@ -260,9 +271,11 @@ def test_upsert_processing_record_existing_record():
     tyre_impression_processing = TyreImpressionProcessingFactory().create(tyre_impression.id)
 
     result = service._upsert_processing_record(tyre_impression, {
-        "grayscale_path": "/files/tyre_impressions/grayscale/test.jpg",
-        "binary_path": "/files/tyre_impressions/binary/test.jpg",
-        "skeleton_path": "/files/tyre_impressions/skeleton/test.jpg",
+        "normalised_path": f"/files/tyre_impressions/{tyre_impression.id}/normalised/test.jpg",
+        "enhanced_path": f"/files/tyre_impressions/{tyre_impression.id}/enhanced/test.jpg",
+        "binary_path": f"/files/tyre_impressions/{tyre_impression.id}/binary/test.jpg",
+        "clean_path": f"/files/tyre_impressions/{tyre_impression.id}/clean/test.jpg",
+        "skeleton_path": f"/files/tyre_impressions/{tyre_impression.id}/skeleton/test.jpg",
         "features": {
             "edge_density": random(),
             "void_ratio": random(),

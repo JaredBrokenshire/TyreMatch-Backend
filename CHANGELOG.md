@@ -6,12 +6,12 @@
 
 ## v0.1.1 26/05/2026
 ### [Test Coverage]
-- Statements: 529
-- Missed: 2
+- Statements: 553
+- Missed: 5
 - Coverage: 99%
 
 Reason for missed statement:
-- New missed statement is a "pass" on a method that has not been implemented yet
+- New missing statements are invocations of methods that do not exist yet or have no function 
 
 ### [Added]
 - Created tyre impression processing table

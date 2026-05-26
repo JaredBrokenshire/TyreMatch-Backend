@@ -2,11 +2,10 @@ import http
 from unittest.mock import patch
 from tests.mocks.data import MockFile
 from database.models import TyreImpression
-from tests.mocks.services import MockFileService
-from domain import InvalidFileTypeError, DatabaseError
-from services import TyreImpressionService, FileService
+from services import TyreImpressionService
 from tests.helpers.factories import TyreImpressionFactory
 from database.models.data_types import TyreImpressionStatus
+from domain import InvalidFileTypeError, DatabaseError, FileSaveError
 from tests.helpers.assertions import assert_paginated_response, assert_tyre_impression_response, \
     assert_tyre_impression_not_in_response, assert_error_response
 
@@ -82,7 +81,7 @@ def test_get_all_pagination_get_page_2(client):
     assert_tyre_impression_not_in_response(data, tyre_impression_3)
 
 
-def test_upload_impression_image_no_file(client):
+def test_upload_no_file(client):
     response = client.post(
         "/tyre-impressions/upload",
         data={"file": None},
@@ -93,7 +92,7 @@ def test_upload_impression_image_no_file(client):
     assert_error_response(response, http.HTTPStatus.BAD_REQUEST, "No file provided")
 
 
-def test_upload_impression_image_no_filename(client):
+def test_upload_no_filename(client):
     file = MockFile(filename="")
 
     response = client.post(
@@ -108,10 +107,10 @@ def test_upload_impression_image_no_filename(client):
     assert_error_response(response, http.HTTPStatus.BAD_REQUEST, "No filename provided")
 
 
-def test_upload_impression_image_invalid_file_type(client):
-    with patch.object(FileService, "save_file", side_effect=InvalidFileTypeError("test error")):
-        file = MockFile(filename="test.txt")
+def test_upload_invalid_file_type_error_from_service(client):
+    file = MockFile(filename="test.jpg")
 
+    with patch.object(TyreImpressionService, "upload_impression_image", side_effect=InvalidFileTypeError("test error")):
         response = client.post(
             "/tyre-impressions/upload",
             data={
@@ -120,14 +119,13 @@ def test_upload_impression_image_invalid_file_type(client):
             content_type="multipart/form-data",
         )
 
-        # Ensure correct status code and error message were returned
         assert_error_response(response, http.HTTPStatus.BAD_REQUEST, "File type not supported")
 
 
-def test_upload_impression_image_permission_error_from_file_service(client):
-    with patch.object(FileService, "save_file", side_effect=PermissionError("test error")):
-        file = MockFile(filename="test.jpg")
+def test_upload_file_save_error_from_service(client):
+    file = MockFile(filename="test.jpg")
 
+    with patch.object(TyreImpressionService, "upload_impression_image", side_effect=FileSaveError("test error")):
         response = client.post(
             "/tyre-impressions/upload",
             data={
@@ -136,30 +134,13 @@ def test_upload_impression_image_permission_error_from_file_service(client):
             content_type="multipart/form-data",
         )
 
-        # Ensure correct status code and error message were returned
         assert_error_response(response, http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error saving file to storage")
 
 
-def test_upload_impression_image_os_error_from_file_service(client):
-    with patch.object(FileService, "save_file", side_effect=OSError("test error")):
-        file = MockFile(filename="test.jpg")
+def test_upload_database_error_from_service(client):
+    file = MockFile(filename="test.jpg")
 
-        response = client.post(
-            "/tyre-impressions/upload",
-            data={
-                "file": (file.stream, file.filename)
-            },
-            content_type="multipart/form-data",
-        )
-
-        # Ensure correct status code and error message were returned
-        assert_error_response(response, http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error saving file to storage")
-
-
-def test_upload_impression_image_database_error_from_tyre_impression_service(client):
     with patch.object(TyreImpressionService, "upload_impression_image", side_effect=DatabaseError("test error")):
-        file = MockFile(filename="test.jpg")
-
         response = client.post(
             "/tyre-impressions/upload",
             data={
@@ -168,16 +149,19 @@ def test_upload_impression_image_database_error_from_tyre_impression_service(cli
             content_type="multipart/form-data",
         )
 
-        # Ensure correct status code and error message were returned
-        assert_error_response(response, http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error uploading file to database")
+        assert_error_response(response, http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error saving file to database")
 
-def test_upload_impression_image(client):
-    mock_file_service = MockFileService()
-    mock_file_service.save_file_response = "/test/path"
 
-    with patch.object(FileService, "save_file", side_effect=mock_file_service.save_file):
-        file = MockFile(filename="test.jpg")
+def test_upload(client):
+    file = MockFile(filename="test.jpg")
 
+    mock_tyre_impression = TyreImpression(
+        uuid="test-uuid",
+        file_path="/test/file/path",
+        status=TyreImpressionStatus.uploaded
+    )
+
+    with patch.object(TyreImpressionService, "upload_impression_image", return_value=mock_tyre_impression):
         response = client.post(
             "/tyre-impressions/upload",
             data={
@@ -188,12 +172,6 @@ def test_upload_impression_image(client):
 
         # Ensure correct status code was returned
         assert http.HTTPStatus.CREATED == response.status_code
+
         data = response.get_json()
-        # Ensure tyre impression model was returned
-        assert_tyre_impression_response(
-            data,
-            TyreImpression(
-                file_path="/test/path",
-                status=TyreImpressionStatus.uploaded,
-            )
-        )
+        assert_tyre_impression_response(data, mock_tyre_impression)

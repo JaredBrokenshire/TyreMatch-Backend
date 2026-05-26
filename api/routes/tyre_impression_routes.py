@@ -50,7 +50,7 @@ def upload():
         return error_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error saving file to storage")
     except DatabaseError as e:
         current_app.logger.error(f"Database error: {e}")
-        return error_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error uploading file to database")
+        return error_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error saving file to database")
 
     res = tyre_impression_response(tyre_impression)
     return jsonify(res), http.HTTPStatus.CREATED

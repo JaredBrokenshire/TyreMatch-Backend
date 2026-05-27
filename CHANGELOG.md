@@ -4,6 +4,9 @@
 - Missed: 
 - Coverage: %
 
+### [Changed]
+- Override tyre impression repo get_by_id to include join for processing
+
 
 ## v0.1.2 26/05/2026
 ### [Test Coverage]

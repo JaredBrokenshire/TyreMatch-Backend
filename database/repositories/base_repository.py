@@ -1,11 +1,12 @@
-from flask import current_app
+import logging
 from database.extensions import db
 from sqlalchemy.exc import IntegrityError, DataError
 from typing import TypeVar, Generic, Type, List, Optional
 from domain.exceptions import DatabaseError, ModelNotFoundError
 
-T = TypeVar('T')
+logger = logging.getLogger(__name__)
 
+T = TypeVar('T')
 
 class BaseRepository(Generic[T]):
     """
@@ -42,7 +43,7 @@ class BaseRepository(Generic[T]):
             self.db.flush()
         except IntegrityError as e:
             self.db.rollback()
-            current_app.logger.error(f"Error creating record in database: {e}")
+            logger.error(f"Error creating record in database: {e}")
             raise DatabaseError(f"Error inserting record into database: {e}")
 
         return entity
@@ -57,7 +58,7 @@ class BaseRepository(Generic[T]):
             return entity
         except (IntegrityError, DataError) as e:
             self.db.rollback()
-            current_app.logger.error(f"Error updating record in database: {e}")
+            logger.error(f"Error updating record in database: {e}")
             raise DatabaseError(f"Error updating record in database: {e}")
 
 

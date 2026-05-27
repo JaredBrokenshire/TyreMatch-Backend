@@ -1,13 +1,15 @@
 import http
+import logging
 from werkzeug.exceptions import BadRequest
+from flask import Blueprint, jsonify, request
 from services.tyre_model_service import TyreModelService
-from flask import Blueprint, jsonify, request, current_app
 from domain.exceptions import DatabaseError, ModelNotFoundError
 from api.responses.response_wrapper import paginated_response, error_response
 from api.responses.tyre_model_responses import tyre_model_response, slim_tyre_model_response
 
-tyre_model_blueprint = Blueprint('tyre_model', __name__)
+logger = logging.getLogger(__name__)
 
+tyre_model_blueprint = Blueprint('tyre_model', __name__)
 
 @tyre_model_blueprint.route('/tyre-models', methods=['GET'])
 def get_all():
@@ -38,7 +40,7 @@ def get_by_id(id_):
     try:
         tyre_model = service.get_by_id(id_)
     except ModelNotFoundError as e:
-        current_app.logger.error(f"Tyre model with id {id_} not found: {e}")
+        logger.error(f"Tyre model with id {id_} not found: {e}")
         return error_response(http.HTTPStatus.NOT_FOUND, f"Tyre model with id {id_} not found")
 
     res = tyre_model_response(tyre_model)
@@ -52,17 +54,17 @@ def create():
     try:
         dto = request.get_json(force=False, silent=False)
     except BadRequest as e:
-        current_app.logger.error(f"Invalid JSON payload: {e}")
+        logger.error(f"Invalid JSON payload: {e}")
         return error_response(http.HTTPStatus.BAD_REQUEST, "Invalid JSON payload")
 
     if not dto:
-        current_app.logger.error(f"Missing JSON payload: {dto}")
+        logger.error(f"Missing JSON payload: {dto}")
         return error_response(http.HTTPStatus.BAD_REQUEST, "Missing JSON payload")
 
     try:
         tyre_model = service.create(dto)
     except DatabaseError as e:
-        current_app.logger.error(f"Error creating tyre model: {e}")
+        logger.error(f"Error creating tyre model: {e}")
         return error_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error creating tyre model record")
 
     res = tyre_model_response(tyre_model)
@@ -75,20 +77,20 @@ def update(id_):
     try:
         dto = request.get_json(force=False, silent=False)
     except BadRequest as e:
-        current_app.logger.error(f"Invalid JSON payload: {e}")
+        logger.error(f"Invalid JSON payload: {e}")
         return error_response(http.HTTPStatus.BAD_REQUEST, "Invalid JSON payload")
 
     if not dto:
-        current_app.logger.error(f"Missing JSON payload: {dto}")
+        logger.error(f"Missing JSON payload: {dto}")
         return error_response(http.HTTPStatus.BAD_REQUEST, "Missing JSON payload")
 
     try:
         tyre_model = service.update(id_, dto)
     except ModelNotFoundError as e:
-        current_app.logger.error(f"Error fetching tyre model with id {id_} from database: {e}")
+        logger.error(f"Error fetching tyre model with id {id_} from database: {e}")
         return error_response(http.HTTPStatus.NOT_FOUND, "Tyre model could not be found")
     except DatabaseError as e:
-        current_app.logger.error(f"Error updating tyre model: {e}")
+        logger.error(f"Error updating tyre model: {e}")
         return error_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error updating tyre model record")
 
     res = tyre_model_response(tyre_model)
@@ -101,10 +103,10 @@ def delete(id_):
     try:
         service.delete(id_)
     except ModelNotFoundError as e:
-        current_app.logger.error(f"Tyre model with id {id_} not found: {e}")
+        logger.error(f"Tyre model with id {id_} not found: {e}")
         return error_response(http.HTTPStatus.NOT_FOUND, "Tyre model could not be found")
     except DatabaseError as e:
-        current_app.logger.error(f"Error deleting tyre model from database: {e}")
+        logger.error(f"Error deleting tyre model from database: {e}")
         return error_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error deleting tyre model from database")
 
     return "", http.HTTPStatus.NO_CONTENT

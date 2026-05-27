@@ -1,16 +1,18 @@
 import os
-from flask import current_app
+import logging
 from werkzeug.datastructures import FileStorage
 from domain.exceptions import InvalidFileError, InvalidFileTypeError
+
+logger = logging.getLogger(__name__)
 
 
 def validate_file(file: FileStorage, valid_extensions: list[str]):
     if not file or file.filename == "":
-        current_app.logger.error("Empty file provided in validate_file")
+        logger.error("Empty file provided in validate_file")
         raise InvalidFileError("Empty file provided in validate_file")
 
     if not allowed_file(file.filename, valid_extensions):
-        current_app.logger.error(f"File extension of {file.filename} is not in {valid_extensions}")
+        logger.error(f"File extension of {file.filename} is not in {valid_extensions}")
         raise InvalidFileTypeError(f"File extension of {file.filename} is not in {valid_extensions}")
 
 

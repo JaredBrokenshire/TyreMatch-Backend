@@ -10,6 +10,7 @@
 
 ### [Changed]
 - Override tyre impression repo get_by_id to include join for processing
+- Changed logger from using flask app context to generic logger so it can be used by async tasks
 
 ### [Removed]
 - Removed explicit relationship definition between tyre impression processing and files

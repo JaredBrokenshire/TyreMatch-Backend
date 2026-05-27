@@ -1,5 +1,5 @@
 import os
-from flask import current_app
+import logging
 from dataclasses import dataclass
 from database.models.file import File
 from werkzeug.datastructures import FileStorage
@@ -8,8 +8,9 @@ from database.repositories.file_repository import FileRepository
 from database.models.data_types.files import FileModel, FileType
 from domain.exceptions import InvalidFileTypeError, InvalidFileError, DatabaseError, FileSaveError
 
-BASE_FILE_DIRECTORY = "/tyre_match/files"
+logger = logging.getLogger(__name__)
 
+BASE_FILE_DIRECTORY = "/tyre_match/files"
 
 @dataclass
 class FileSaveRequest:
@@ -35,20 +36,20 @@ class FileService:
         try:
             validate_file(file, request.valid_extensions)
         except InvalidFileTypeError as e:
-            current_app.logger.error(f"Invalid file type error in file service: {e}")
+            logger.error(f"Invalid file type error in file service: {e}")
             raise InvalidFileTypeError(f"Invalid file type error in file service: {e}")
         except InvalidFileError as e:
-            current_app.logger.error(f"Invalid file error in file service: {e}")
+            logger.error(f"Invalid file error in file service: {e}")
             raise InvalidFileError(f"Invalid file error in file service: {e}")
 
         # Save file locally
         try:
             file_path = self._save_file(file, request.upload_directory)
         except PermissionError as e:
-            current_app.logger.error(f"Permission error when saving file in file service: {e}")
+            logger.error(f"Permission error when saving file in file service: {e}")
             raise PermissionError(f"Permission error when saving file in file service: {e}")
         except OSError as e:
-            current_app.logger.error(f"OS error when saving file in file service: {e}")
+            logger.error(f"OS error when saving file in file service: {e}")
             raise PermissionError(f"OS error when saving file in file service: {e}")
 
         # Create DB record
@@ -71,15 +72,15 @@ class FileService:
     def _save_file(self, file: FileStorage, location: str):
         directory_path = os.path.join(self.base_directory, location)
 
-        current_app.logger.info("Saving file: {}".format(directory_path))
+        logger.info("Saving file: {}".format(directory_path))
 
         try:
             make_directory(directory_path)
         except PermissionError as e:
-            current_app.logger.error(f"Permission denied making directory `{directory_path}`: {e}")
+            logger.error(f"Permission denied making directory `{directory_path}`: {e}")
             raise PermissionError(f"Permission denied making directory `{directory_path}`: {e}")
         except OSError as e:
-            current_app.logger.error(f"OS error when making directory `{directory_path}`: {e}")
+            logger.error(f"OS error when making directory `{directory_path}`: {e}")
             raise OSError(f"OS error when making directory `{directory_path}`: {e}")
 
         path = os.path.join(directory_path, file.filename)
@@ -87,7 +88,7 @@ class FileService:
         try:
             file.save(path)
         except OSError as e:
-            current_app.logger.error(f"OS error when saving file: {e}")
+            logger.error(f"OS error when saving file: {e}")
             raise OSError(f"OS error when saving file: {e}")
 
         return path

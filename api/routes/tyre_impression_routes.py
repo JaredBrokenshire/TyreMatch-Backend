@@ -1,9 +1,12 @@
 import http
-from flask import Blueprint, request, jsonify, current_app
+import logging
+from flask import Blueprint, request, jsonify
 from services.tyre_impression_service import TyreImpressionService
 from api.responses.tyre_impression_responses import tyre_impression_response
 from api.responses.response_wrapper import error_response, paginated_response
 from domain.exceptions import InvalidFileTypeError, FileSaveError, DatabaseError
+
+logger = logging.getLogger(__name__)
 
 tyre_impression_blueprint = Blueprint('tyre_impression', __name__)
 
@@ -34,23 +37,23 @@ def upload():
     try:
         file = request.files['file']
     except KeyError as e:
-        current_app.logger.error(f"No file provided: {e}")
+        logger.error(f"No file provided: {e}")
         return error_response(http.HTTPStatus.BAD_REQUEST, "No file provided")
 
     if not file:
-        current_app.logger.error(f"No filename provided: file={file}")
+        logger.error(f"No filename provided: file={file}")
         return error_response(http.HTTPStatus.BAD_REQUEST, "No filename provided")
 
     try:
         tyre_impression = service.upload_impression_image(file)
     except InvalidFileTypeError as e:
-        current_app.logger.error(f"Invalid file type error: {e}")
+        logger.error(f"Invalid file type error: {e}")
         return error_response(http.HTTPStatus.BAD_REQUEST, "File type not supported")
     except FileSaveError as e:
-        current_app.logger.error(f"File save error: {e}")
+        logger.error(f"File save error: {e}")
         return error_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error saving file to storage")
     except DatabaseError as e:
-        current_app.logger.error(f"Database error: {e}")
+        logger.error(f"Database error: {e}")
         return error_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "Error saving file to database")
 
     res = tyre_impression_response(tyre_impression)

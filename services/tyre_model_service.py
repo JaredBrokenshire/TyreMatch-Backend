@@ -1,10 +1,12 @@
+import logging
 from sqlalchemy import or_
-from flask import current_app
 from database.extensions import db
 from database.unit_of_work import UnitOfWork
 from database.models.tyre_model import TyreModel
 from domain.exceptions import DatabaseError, ModelNotFoundError
 from database.repositories.tyre_model_repository import TyreModelRepository
+
+logger = logging.getLogger(__name__)
 
 
 class TyreModelService:
@@ -27,7 +29,7 @@ class TyreModelService:
         tyre_model =  self.repo.get_by_id(id_)
 
         if not tyre_model:
-            current_app.logger.error(f"Error getting tyre model by id: {id_}")
+            logger.error(f"Error getting tyre model by id: {id_}")
             raise ModelNotFoundError(f"Error getting tyre model by id: {id_}")
 
         return tyre_model
@@ -51,7 +53,7 @@ class TyreModelService:
                     notes=dto.get("notes", None),
                 )
             except DatabaseError as e:
-                current_app.logger.error(f"Error creating tyre model record: {e}")
+                logger.error(f"Error creating tyre model record: {e}")
                 raise DatabaseError(f"Error creating tyre model record: {e}")
 
         return tyre_model
@@ -61,7 +63,7 @@ class TyreModelService:
             tyre_model = self.repo.get_by_id(id_)
 
             if not tyre_model:
-                current_app.logger.error(f"Error getting tyre model by id: {id_}")
+                logger.error(f"Error getting tyre model by id: {id_}")
                 raise ModelNotFoundError(f"Error getting tyre model by id: {id_}")
 
             try:
@@ -90,7 +92,7 @@ class TyreModelService:
                     **update_data
                 )
             except DatabaseError as e:
-                current_app.logger.error(f"Error updating tyre model record: {e}")
+                logger.error(f"Error updating tyre model record: {e}")
                 raise DatabaseError(f"Error updating tyre model record: {e}")
 
         return updated_tyre_model
@@ -100,10 +102,10 @@ class TyreModelService:
             try:
                 res = self.repo.delete(id_)
             except ModelNotFoundError as e:
-                current_app.logger.error(f"Tyre model with id {id_} not found: {e}")
+                logger.error(f"Tyre model with id {id_} not found: {e}")
                 raise ModelNotFoundError(f"Tyre model with id {id_} not found")
             except DatabaseError as e:
-                current_app.logger.error(f"Error deleting tyre model record: {e}")
+                logger.error(f"Error deleting tyre model record: {e}")
                 raise DatabaseError(f"Error deleting tyre model record: {e}")
 
             return res

@@ -1,4 +1,4 @@
-from flask import current_app
+import logging
 from database.extensions import db
 from database.unit_of_work import UnitOfWork
 from database.models.tyre_impression import TyreImpression
@@ -8,6 +8,8 @@ from database.models.data_types.tyre_impression_status import TyreImpressionStat
 from database.repositories.tyre_impression_repository import TyreImpressionRepository
 from pipelines.tyre_impression_processing_pipeline import TyreImpressionProcessingPipeline
 from database.repositories.tyre_impression_processing_repository import TyreImpressionProcessingRepository
+
+logger = logging.getLogger(__name__)
 
 
 class TyreImpressionProcessingService:
@@ -21,7 +23,7 @@ class TyreImpressionProcessingService:
         tyre_impression_processing = self.tyre_impression_processing_repository.get_by_tyre_impression_id(tyre_impression_id)
 
         if not tyre_impression_processing:
-            current_app.logger.error(f"Error getting tyre impression processing by tyre impression id {tyre_impression_id}")
+            logger.error(f"Error getting tyre impression processing by tyre impression id {tyre_impression_id}")
             raise ModelNotFoundError(f"Error getting tyre impression processing by tyre impression id {tyre_impression_id}")
 
         return tyre_impression_processing
@@ -33,21 +35,21 @@ class TyreImpressionProcessingService:
             try:
                 tyre_impression = self._get_tyre_impression(tyre_impression_id)
             except ModelNotFoundError as e:
-                current_app.logger.error(f"Error getting tyre impression in processing service with id {tyre_impression_id}: {e}")
+                logger.error(f"Error getting tyre impression in processing service with id {tyre_impression_id}: {e}")
                 raise ModelNotFoundError(f"Error getting tyre impression in processing service with id {tyre_impression_id}: {e}")
 
             # Set status -> processing
             try:
                 tyre_impression = self._set_tyre_impression_status(tyre_impression, TyreImpressionStatus.processing)
             except DatabaseError as e:
-                current_app.logger.error(f"Error setting tyre impression status `{TyreImpressionStatus.processing}` in processing service: {e}")
+                logger.error(f"Error setting tyre impression status `{TyreImpressionStatus.processing}` in processing service: {e}")
                 raise DatabaseError(f"Error setting tyre impression status `{TyreImpressionStatus.processing}` in processing service: {e}")
 
             # Run pipeline
             try:
                 self.pipeline.process(tyre_impression.processing.id)
             except Exception as e:
-                current_app.logger.error(f"Error processing tyre impression: {e}")
+                logger.error(f"Error processing tyre impression: {e}")
                 raise e
 
 
@@ -55,7 +57,7 @@ class TyreImpressionProcessingService:
         tyre_impression = self.tyre_impression_repository.get_by_id(tyre_impression_id)
 
         if not tyre_impression:
-            current_app.logger.error(f"Error getting tyre impression with id {tyre_impression_id}")
+            logger.error(f"Error getting tyre impression with id {tyre_impression_id}")
             raise ModelNotFoundError(f"Error getting tyre impression with id {tyre_impression_id}")
 
         return tyre_impression
@@ -65,7 +67,7 @@ class TyreImpressionProcessingService:
         try:
             updated_tyre_impression = self.tyre_impression_repository.update(tyre_impression, status=status)
         except DatabaseError as e:
-            current_app.logger.error(f"Error setting tyre impression status: {e}")
+            logger.error(f"Error setting tyre impression status: {e}")
             raise DatabaseError(f"Error setting tyre impression status: {e}")
 
         return updated_tyre_impression

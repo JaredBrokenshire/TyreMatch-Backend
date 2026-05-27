@@ -1,4 +1,4 @@
-from flask import current_app
+import logging
 from database.extensions import db
 from utils.files import validate_file
 from database.unit_of_work import UnitOfWork
@@ -12,6 +12,8 @@ from database.repositories.tyre_impression_repository import TyreImpressionRepos
 from domain.exceptions import InvalidFileTypeError, FileSaveError, DatabaseError, InvalidFileError
 from database.repositories.tyre_impression_processing_repository import TyreImpressionProcessingRepository
 
+logger = logging.getLogger(__name__)
+
 
 class TyreImpressionService:
     def __init__(self):
@@ -24,16 +26,16 @@ class TyreImpressionService:
 
     def upload_impression_image(self, file: FileStorage) -> TyreImpression:
         if not file:
-            current_app.logger.error("No file provided in tyre impression service")
+            logger.error("No file provided in tyre impression service")
             raise InvalidFileTypeError("No file provided")
 
         try:
             validate_file(file, ["jpg", "jpeg", "png"])
         except InvalidFileTypeError as e:
-            current_app.logger.error(f"Invalid file type error from validate_file in tyre impression service: {e}")
+            logger.error(f"Invalid file type error from validate_file in tyre impression service: {e}")
             raise InvalidFileTypeError(f"Invalid file type error from validate_file in tyre impression service: {e}")
         except InvalidFileError as e:
-            current_app.logger.error(f"Invalid file error from validate_file in tyre impression service: {e}")
+            logger.error(f"Invalid file error from validate_file in tyre impression service: {e}")
             raise InvalidFileTypeError(f"Invalid file error from validate_file in tyre impression service: {e}")
 
         uuid, filename = uuid_filename(file)
@@ -43,7 +45,7 @@ class TyreImpressionService:
             try:
                 tyre_impression = self.tyre_impression_repository.create(uuid=uuid)
             except DatabaseError as e:
-                current_app.logger.exception(f"Error creating tyre impression record in tyre impression service: {e}")
+                logger.exception(f"Error creating tyre impression record in tyre impression service: {e}")
                 raise DatabaseError(f"Error creating tyre impression record in tyre impression service: {e}")
 
             try:
@@ -51,7 +53,7 @@ class TyreImpressionService:
                     tyre_impression_id=tyre_impression.id,
                 )
             except DatabaseError as e:
-                current_app.logger.exception(
+                logger.exception(
                     f"Error creating tyre impression processing record in tyre impression service: {e}")
                 raise DatabaseError(f"Error creating tyre impression processing record in tyre impression service: {e}")
 
@@ -67,16 +69,16 @@ class TyreImpressionService:
                     )
                 )
             except InvalidFileError as e:
-                current_app.logger.error(f"Invalid file error from file service in tyre impression service: {e}")
+                logger.error(f"Invalid file error from file service in tyre impression service: {e}")
                 raise FileSaveError(f"Invalid file error from file service in tyre impression service: {e}")
             except InvalidFileTypeError as e:
-                current_app.logger.error(f"Invalid file type error from file service in tyre impression service: {e}")
+                logger.error(f"Invalid file type error from file service in tyre impression service: {e}")
                 raise FileSaveError(f"Invalid file type error from file service in tyre impression service: {e}")
             except (PermissionError, OSError) as e:
-                current_app.logger.error(f"Permission or OS error from file service in tyre impression service: {e}")
+                logger.error(f"Permission or OS error from file service in tyre impression service: {e}")
                 raise FileSaveError(f"Permission or OS error from file service in tyre impression service: {e}")
             except DatabaseError as e:
-                current_app.logger.error(f"Database error from file service in tyre impression service: {e}")
+                logger.error(f"Database error from file service in tyre impression service: {e}")
                 raise FileSaveError(f"Database error from file service in tyre impression service: {e}")
 
         # Trigger async processing task

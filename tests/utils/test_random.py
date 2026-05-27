@@ -1,4 +1,4 @@
-from utils import random_string
+from utils.random_generators import random_string
 
 
 def test_random_string():

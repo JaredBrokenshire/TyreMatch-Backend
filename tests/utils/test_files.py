@@ -2,8 +2,8 @@ import re
 import pytest
 from unittest.mock import patch
 from werkzeug.datastructures import FileStorage
-from domain import InvalidFileError, InvalidFileTypeError
-from utils import allowed_file, validate_file, make_directory
+from utils.files import allowed_file, validate_file, make_directory
+from domain.exceptions import InvalidFileError, InvalidFileTypeError
 
 
 def test_validate_file_no_file():
@@ -21,7 +21,7 @@ def test_validate_file_no_filename():
 def test_validate_file_invalid_extension():
     file = FileStorage(filename="invalid.extension")
 
-    with patch("utils.allowed_file", return_value=False):
+    with patch("utils.files.allowed_file", return_value=False):
         with pytest.raises(InvalidFileTypeError, match=re.escape("File extension of invalid.extension is not in ['png']")):
             validate_file(file, ["png"])
 
@@ -29,7 +29,7 @@ def test_validate_file_invalid_extension():
 def test_validate_file():
     file = FileStorage(filename="test.jpg")
 
-    with patch("utils.allowed_file", return_value=True):
+    with patch("utils.files.allowed_file", return_value=True):
         assert validate_file(file, ["jpg"]) is None
 
 

@@ -1,6 +1,6 @@
 from database.session import Base
 from datetime import datetime, timezone
-from database.models.data_types import FileModel, FileType
+from database.models.data_types.files import FileModel, FileType
 from sqlalchemy import Column, Integer, DateTime, Enum, String, Index
 
 

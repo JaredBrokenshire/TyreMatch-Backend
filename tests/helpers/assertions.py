@@ -1,4 +1,5 @@
-from database.models import TyreModel, TyreImpression
+from database.models.tyre_model import TyreModel
+from database.models.tyre_impression import TyreImpression
 
 
 # API Response Objects

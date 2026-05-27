@@ -1,12 +1,12 @@
 import os
 from flask import current_app
-from database.models import File
 from dataclasses import dataclass
-from utils import validate_file, make_directory
+from database.models.file import File
 from werkzeug.datastructures import FileStorage
-from database.repositories import FileRepository
-from database.models.data_types import FileModel, FileType
-from domain import InvalidFileTypeError, InvalidFileError, DatabaseError
+from utils.files import validate_file, make_directory
+from database.repositories.file_repository import FileRepository
+from database.models.data_types.files import FileModel, FileType
+from domain.exceptions import InvalidFileTypeError, InvalidFileError, DatabaseError, FileSaveError
 
 BASE_FILE_DIRECTORY = "/tyre_match/files"
 

@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import patch
-from services import TyreModelService
-from domain import ModelNotFoundError, DatabaseError
-from tests.helpers.factories import TyreModelFactory
-from database.repositories import TyreModelRepository
+from services.tyre_model_service import TyreModelService
+from domain.exceptions import ModelNotFoundError, DatabaseError
+from tests.helpers.factories.tyre_model_factory import TyreModelFactory
+from database.repositories.tyre_model_repository import TyreModelRepository
 
 
 def test_get_all():

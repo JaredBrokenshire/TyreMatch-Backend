@@ -1,6 +1,8 @@
-from database.models.data_types import FileModel, FileType
-from database.repositories import TyreImpressionProcessingRepository
-from tests.helpers.factories import TyreImpressionFactory, TyreImpressionProcessingFactory, FileFactory
+from tests.helpers.factories.file_factory import FileFactory
+from database.models.data_types.files import FileModel, FileType
+from tests.helpers.factories.tyre_impression_factory import TyreImpressionFactory
+from tests.helpers.factories.tyre_impression_processing_factory import TyreImpressionProcessingFactory
+from database.repositories.tyre_impression_processing_repository import TyreImpressionProcessingRepository
 
 
 def test_get_by_id_invalid_id():

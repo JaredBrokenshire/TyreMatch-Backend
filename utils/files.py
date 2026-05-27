@@ -1,7 +1,7 @@
 import os
 from flask import current_app
 from werkzeug.datastructures import FileStorage
-from domain import InvalidFileError, InvalidFileTypeError
+from domain.exceptions import InvalidFileError, InvalidFileTypeError
 
 
 def validate_file(file: FileStorage, valid_extensions: list[str]):

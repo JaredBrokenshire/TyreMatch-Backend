@@ -1,5 +1,5 @@
 from sqlalchemy.orm import joinedload
-from database.models import TyreImpression
+from database.models.tyre_impression import TyreImpression
 from database.repositories.base_repository import BaseRepository
 
 

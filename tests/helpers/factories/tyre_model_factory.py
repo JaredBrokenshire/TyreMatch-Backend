@@ -1,5 +1,5 @@
 import random
-from database.repositories import TyreModelRepository
+from database.repositories.tyre_model_repository import TyreModelRepository
 
 
 class TyreModelFactory:

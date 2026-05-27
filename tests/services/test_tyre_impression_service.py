@@ -1,12 +1,15 @@
 import pytest
 from unittest.mock import patch
-from database.models import File
+from database.models.file import File
+from services.file_service import FileService
 from werkzeug.datastructures import FileStorage
-from services import TyreImpressionService, FileService
-from tests.helpers.factories import TyreImpressionFactory
-from database.models.data_types import TyreImpressionStatus, FileModel, FileType
-from domain import InvalidFileTypeError, FileSaveError, DatabaseError, InvalidFileError
-from database.repositories import TyreImpressionRepository, TyreImpressionProcessingRepository
+from database.models.data_types.files import FileType, FileModel
+from services.tyre_impression_service import TyreImpressionService
+from tests.helpers.factories.tyre_impression_factory import TyreImpressionFactory
+from database.models.data_types.tyre_impression_status import TyreImpressionStatus
+from database.repositories.tyre_impression_repository import TyreImpressionRepository
+from domain.exceptions import InvalidFileTypeError, FileSaveError, DatabaseError, InvalidFileError
+from database.repositories.tyre_impression_processing_repository import TyreImpressionProcessingRepository
 
 
 def test_get_all():

@@ -1,4 +1,4 @@
-from database.models import File
+from database.models.file import File
 from database.repositories.base_repository import BaseRepository
 
 

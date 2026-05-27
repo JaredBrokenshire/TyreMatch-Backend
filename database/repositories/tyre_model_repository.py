@@ -1,4 +1,4 @@
-from database.models import TyreModel
+from database.models.tyre_model import TyreModel
 from database.repositories.base_repository import BaseRepository
 
 

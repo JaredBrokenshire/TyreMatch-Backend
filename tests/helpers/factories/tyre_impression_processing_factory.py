@@ -1,5 +1,5 @@
 from random import random, randint
-from database.repositories import TyreImpressionProcessingRepository
+from database.repositories.tyre_impression_processing_repository import TyreImpressionProcessingRepository
 
 
 class TyreImpressionProcessingFactory:

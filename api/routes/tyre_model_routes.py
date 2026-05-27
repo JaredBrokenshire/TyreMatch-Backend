@@ -1,9 +1,10 @@
 import http
-from services import TyreModelService
 from werkzeug.exceptions import BadRequest
-from domain import DatabaseError, ModelNotFoundError
+from services.tyre_model_service import TyreModelService
 from flask import Blueprint, jsonify, request, current_app
-from api.responses import paginated_response, slim_tyre_model_response, tyre_model_response, error_response
+from domain.exceptions import DatabaseError, ModelNotFoundError
+from api.responses.response_wrapper import paginated_response, error_response
+from api.responses.tyre_model_responses import tyre_model_response, slim_tyre_model_response
 
 tyre_model_blueprint = Blueprint('tyre_model', __name__)
 

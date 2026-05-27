@@ -13,6 +13,7 @@
 
 ### [Removed]
 - Removed explicit relationship definition between tyre impression processing and files
+- Removed all instances of global importing with __init__.py to prevent packages being imported before they are needed
 
 
 ## v0.1.2 26/05/2026

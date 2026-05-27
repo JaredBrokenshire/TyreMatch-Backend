@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import patch
-from services import FileService
+from services.file_service import FileService
 from werkzeug.datastructures import FileStorage
-from database.repositories import FileRepository
 from services.file_service import FileSaveRequest
-from database.models.data_types import FileModel, FileType
 from tests.helpers.requests import generic_file_save_request
-from domain import InvalidFileTypeError, InvalidFileError, DatabaseError
+from database.repositories.file_repository import FileRepository
+from database.models.data_types.files import FileModel, FileType
+from domain.exceptions import InvalidFileTypeError, InvalidFileError, DatabaseError
 
 
 def test_handle_file_invalid_file_type_error_from_validate_file():

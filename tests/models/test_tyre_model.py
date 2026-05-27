@@ -1,4 +1,4 @@
-from tests.helpers.factories import TyreModelFactory
+from tests.helpers.factories.tyre_model_factory import TyreModelFactory
 
 
 def test_repr():

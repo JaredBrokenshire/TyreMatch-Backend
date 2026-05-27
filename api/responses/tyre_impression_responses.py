@@ -1,4 +1,4 @@
-from database.models import TyreImpression
+from database.models.tyre_impression import TyreImpression
 
 
 def tyre_impression_response(tyre_impression: TyreImpression):

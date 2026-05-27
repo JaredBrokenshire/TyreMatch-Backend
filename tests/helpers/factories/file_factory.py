@@ -1,6 +1,6 @@
-from utils import random_string
-from database.repositories import FileRepository
-from database.models.data_types import FileModel, FileType
+from utils.random_generators import random_string
+from database.repositories.file_repository import FileRepository
+from database.models.data_types.files import FileModel, FileType
 
 
 class FileFactory:

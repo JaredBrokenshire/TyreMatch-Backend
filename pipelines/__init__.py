@@ -1,1 +1,0 @@
-from .tyre_impression_processing_pipeline import TyreImpressionProcessingPipeline

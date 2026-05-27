@@ -1,8 +1,8 @@
 from flask import current_app
 from database.extensions import db
-from domain import DatabaseError, ModelNotFoundError
 from sqlalchemy.exc import IntegrityError, DataError
 from typing import TypeVar, Generic, Type, List, Optional
+from domain.exceptions import DatabaseError, ModelNotFoundError
 
 T = TypeVar('T')
 

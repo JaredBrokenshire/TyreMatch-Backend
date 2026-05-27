@@ -1,8 +1,8 @@
 import pytest
-from database.models import TyreModel
-from domain import DatabaseError, ModelNotFoundError
-from tests.helpers.factories import TyreModelFactory
+from database.models.tyre_model import TyreModel
+from domain.exceptions import DatabaseError, ModelNotFoundError
 from database.repositories.base_repository import BaseRepository
+from tests.helpers.factories.tyre_model_factory import TyreModelFactory
 
 
 def test_get_all_returns_models():

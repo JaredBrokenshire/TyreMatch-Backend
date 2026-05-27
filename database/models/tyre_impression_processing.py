@@ -1,6 +1,6 @@
 from datetime import datetime
-from database.models import File
 from database.session import Base
+from database.models.file import File
 from sqlalchemy.orm import relationship
 from typing import Optional, Dict, ClassVar
 from sqlalchemy.dialects.mysql import LONGTEXT

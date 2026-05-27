@@ -1,11 +1,12 @@
 import pytest
 from unittest.mock import patch
-from domain import ModelNotFoundError, DatabaseError
-from pipelines import TyreImpressionProcessingPipeline
-from database.repositories import TyreImpressionRepository
-from database.models.data_types import TyreImpressionStatus
-from tests.helpers.factories import TyreImpressionFactory, TyreImpressionProcessingFactory
+from domain.exceptions import ModelNotFoundError, DatabaseError
+from tests.helpers.factories.tyre_impression_factory import TyreImpressionFactory
+from database.models.data_types.tyre_impression_status import TyreImpressionStatus
+from database.repositories.tyre_impression_repository import TyreImpressionRepository
 from services.tyre_impression_processing_service import TyreImpressionProcessingService
+from pipelines.tyre_impression_processing_pipeline import TyreImpressionProcessingPipeline
+from tests.helpers.factories.tyre_impression_processing_factory import TyreImpressionProcessingFactory
 
 
 def test_get_by_tyre_impression_id_invalid_id():

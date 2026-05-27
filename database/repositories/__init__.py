@@ -1,4 +1,0 @@
-from .file_repository import FileRepository
-from .tyre_model_repository import TyreModelRepository
-from .tyre_impression_repository import TyreImpressionRepository
-from .tyre_impression_processing_repository import TyreImpressionProcessingRepository

@@ -1,8 +1,9 @@
 import http
-from services import TyreImpressionService
 from flask import Blueprint, request, jsonify, current_app
-from domain import InvalidFileTypeError, FileSaveError, DatabaseError
-from api.responses import tyre_impression_response, error_response, paginated_response
+from services.tyre_impression_service import TyreImpressionService
+from api.responses.tyre_impression_responses import tyre_impression_response
+from api.responses.response_wrapper import error_response, paginated_response
+from domain.exceptions import InvalidFileTypeError, FileSaveError, DatabaseError
 
 tyre_impression_blueprint = Blueprint('tyre_impression', __name__)
 

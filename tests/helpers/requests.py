@@ -1,8 +1,8 @@
 from random import randint
-from utils import random_string
+from utils.random_generators import random_string
 from werkzeug.datastructures import FileStorage
 from services.file_service import FileSaveRequest
-from database.models.data_types import FileModel, FileType
+from database.models.data_types.files import FileModel, FileType
 
 
 def generic_file_save_request(extension:str="jpg") -> FileSaveRequest:

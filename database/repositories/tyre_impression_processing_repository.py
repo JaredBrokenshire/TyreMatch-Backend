@@ -1,6 +1,7 @@
-from database.models.data_types import FileModel
-from database.models import TyreImpressionProcessing, File
+from database.models.file import File
+from database.models.data_types.files import FileModel
 from database.repositories.base_repository import BaseRepository
+from database.models.tyre_impression_processing import TyreImpressionProcessing
 
 
 class TyreImpressionProcessingRepository(BaseRepository[TyreImpressionProcessing]):

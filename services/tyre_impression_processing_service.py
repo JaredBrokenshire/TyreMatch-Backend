@@ -1,11 +1,13 @@
 from flask import current_app
 from database.extensions import db
 from database.unit_of_work import UnitOfWork
-from domain import ModelNotFoundError, DatabaseError
-from pipelines import TyreImpressionProcessingPipeline
-from database.models.data_types import TyreImpressionStatus
-from database.models import TyreImpressionProcessing, TyreImpression
-from database.repositories import TyreImpressionRepository, TyreImpressionProcessingRepository
+from database.models.tyre_impression import TyreImpression
+from domain.exceptions import ModelNotFoundError, DatabaseError
+from database.models.tyre_impression_processing import TyreImpressionProcessing
+from database.models.data_types.tyre_impression_status import TyreImpressionStatus
+from database.repositories.tyre_impression_repository import TyreImpressionRepository
+from pipelines.tyre_impression_processing_pipeline import TyreImpressionProcessingPipeline
+from database.repositories.tyre_impression_processing_repository import TyreImpressionProcessingRepository
 
 
 class TyreImpressionProcessingService:

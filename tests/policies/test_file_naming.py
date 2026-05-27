@@ -1,5 +1,5 @@
 from werkzeug.datastructures import FileStorage
-from policies import uuid_filename, original_filename, prefixed_filename
+from policies.file_naming import uuid_filename, original_filename, prefixed_filename
 
 
 def test_uuid_filename():

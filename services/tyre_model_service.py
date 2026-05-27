@@ -1,10 +1,10 @@
 from sqlalchemy import or_
 from flask import current_app
 from database.extensions import db
-from database.models import TyreModel
 from database.unit_of_work import UnitOfWork
-from domain import DatabaseError, ModelNotFoundError
-from database.repositories import TyreModelRepository
+from database.models.tyre_model import TyreModel
+from domain.exceptions import DatabaseError, ModelNotFoundError
+from database.repositories.tyre_model_repository import TyreModelRepository
 
 
 class TyreModelService:

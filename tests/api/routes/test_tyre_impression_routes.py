@@ -1,11 +1,11 @@
 import http
 from unittest.mock import patch
-from database.models import TyreImpression
-from services import TyreImpressionService
 from werkzeug.datastructures import FileStorage
-from tests.helpers.factories import TyreImpressionFactory
-from database.models.data_types import TyreImpressionStatus
-from domain import InvalidFileTypeError, DatabaseError, FileSaveError
+from database.models.tyre_impression import TyreImpression
+from services.tyre_impression_service import TyreImpressionService
+from domain.exceptions import InvalidFileTypeError, DatabaseError, FileSaveError
+from tests.helpers.factories.tyre_impression_factory import TyreImpressionFactory
+from database.models.data_types.tyre_impression_status import TyreImpressionStatus
 from tests.helpers.assertions import assert_paginated_response, assert_tyre_impression_response, \
     assert_tyre_impression_not_in_response, assert_error_response
 

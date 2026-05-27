@@ -1,7 +1,6 @@
-import pytest
-
-from database.repositories import TyreImpressionRepository
-from tests.helpers.factories import TyreImpressionFactory, TyreImpressionProcessingFactory
+from tests.helpers.factories.tyre_impression_factory import TyreImpressionFactory
+from database.repositories.tyre_impression_repository import TyreImpressionRepository
+from tests.helpers.factories.tyre_impression_processing_factory import TyreImpressionProcessingFactory
 
 
 def test_get_by_id_invalid_id():

@@ -1,8 +1,8 @@
 from database.session import Base
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
-from database.models.data_types import TyreImpressionStatus
 from sqlalchemy import Column, Integer, String, DateTime, Enum
+from database.models.data_types.tyre_impression_status import TyreImpressionStatus
 
 
 class TyreImpression(Base):

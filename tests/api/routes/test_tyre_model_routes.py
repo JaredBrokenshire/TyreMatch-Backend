@@ -1,9 +1,9 @@
 import http
 from unittest.mock import patch
-from domain import DatabaseError
-from database.models import TyreModel
-from services import TyreModelService
-from tests.helpers.factories import TyreModelFactory
+from domain.exceptions import DatabaseError
+from database.models.tyre_model import TyreModel
+from services.tyre_model_service import TyreModelService
+from tests.helpers.factories.tyre_model_factory import TyreModelFactory
 from tests.helpers.assertions import assert_paginated_response, assert_slim_tyre_model_response, \
     assert_tyre_model_not_in_response, assert_error_response, assert_tyre_model_response, \
     assert_is_not_tyre_model

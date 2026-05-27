@@ -1,15 +1,16 @@
-import policies
 from flask import current_app
-from utils import validate_file
 from database.extensions import db
-from database.models import TyreImpression
+from utils.files import validate_file
 from database.unit_of_work import UnitOfWork
-from tasks import process_tyre_impression_task
+from policies.file_naming import uuid_filename
 from werkzeug.datastructures import FileStorage
-from database.models.data_types import FileType, FileModel
+from database.models.tyre_impression import TyreImpression
 from services.file_service import FileService, FileSaveRequest
-from domain import InvalidFileTypeError, FileSaveError, DatabaseError, InvalidFileError
-from database.repositories import TyreImpressionRepository, TyreImpressionProcessingRepository
+from database.models.data_types.files import FileType, FileModel
+from tasks.tyre_impression_tasks import process_tyre_impression_task
+from database.repositories.tyre_impression_repository import TyreImpressionRepository
+from domain.exceptions import InvalidFileTypeError, FileSaveError, DatabaseError, InvalidFileError
+from database.repositories.tyre_impression_processing_repository import TyreImpressionProcessingRepository
 
 
 class TyreImpressionService:
@@ -35,7 +36,7 @@ class TyreImpressionService:
             current_app.logger.error(f"Invalid file error from validate_file in tyre impression service: {e}")
             raise InvalidFileTypeError(f"Invalid file error from validate_file in tyre impression service: {e}")
 
-        uuid, filename = policies.uuid_filename(file)
+        uuid, filename = uuid_filename(file)
         file.filename = filename
 
         with UnitOfWork(db.session):
